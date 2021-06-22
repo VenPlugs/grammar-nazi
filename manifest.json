@@ -1,8 +1,7 @@
 {
+  "author": "Vendicated",
+  "description": "Automatic punctuation, capitalization, and word replacement with a custom dictionary.",
+  "license": "Apache-2.0",
   "name": "Grammar Nazi",
-  "version": "1.0.0",
-  "description": "Automatic punctuation, capitalization, and word comparison with a custom dictionary.",
-  "author": "Swishilicous#3200",
-  "license": "MIT."
+  "version": "1.0.1"
 }
-
