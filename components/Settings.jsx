@@ -1,26 +1,26 @@
-import { React } from '@vizality/webpack'
-import { SwitchItem, RadioGroup } from '@vizality/components/settings'
+const { React } = require('powercord/webpack')
+const { SwitchItem, RadioGroup } = require('powercord/components/settings')
 
-export default ({getSetting, toggleSetting, updateSetting }) => <>
+module.exports = ({getSetting, updateSetting }) => <>
       <div>
         <SwitchItem
           note='Adds a period at the end of every message. Ignores question marks and exclamation points.'
           value= { getSetting('punctuation') }
-          onChange={ () => { toggleSetting('punctuation') }}
+          onChange={ () => { updateSetting('punctuation', !getSetting('punctuation')) }}
         >
           Forced Punctuation
         </SwitchItem>
         <SwitchItem
           note='Capitalizes the first letter of every sentence.'
           value= { getSetting('capitalization') }
-          onChange={ () => { toggleSetting('capitalization') }}
+          onChange={ () => { updateSetting('capitalization', !getSetting('capitalization')) }}
         >
           Normalized Capitalization
         </SwitchItem>
         <SwitchItem
           note='You can interact with your dictionary using chat commands.'
           value= { getSetting('dictionary') }
-          onChange={ () => { toggleSetting('dictionary') }}
+          onChange={ () => { updateSetting('dictionary', !getSetting('dictionary')) }}
         >
           Custom Dictionary
         </SwitchItem>

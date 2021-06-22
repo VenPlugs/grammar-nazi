@@ -1,5 +1,6 @@
-import { React } from '@vizality/webpack'
-import { Tooltip } from '@vizality/components'
+const { React, getModuleByDisplayName } = require('powercord/webpack')
+
+const Tooltip = getModuleByDisplayName("Tooltip", false);
 
 module.exports = class HeaderBarButton extends React.PureComponent {
 	constructor(props){
@@ -12,6 +13,7 @@ module.exports = class HeaderBarButton extends React.PureComponent {
 	render() {
 		return <>
 			<Tooltip text={`${this.enabled ? 'Disable' : 'Enable'} Grammar Nazi`} position='bottom'>
+			{({ onMouseLeave, onMouseEnter }) => (
 				<this.props.bartype icon={()=>
 					<svg class='icon-22AiRD' width='24px' height='24px'> 
 						<polygon 
@@ -27,7 +29,10 @@ module.exports = class HeaderBarButton extends React.PureComponent {
 							this.set('nazify', this.enabled)
 							this.forceUpdate()
 					}}
+					onMouseEnter={onMouseEnter}
+					onMouseLeave={onMouseLeave}  
 				/>
+			)}
 			</Tooltip>
 		</>
 	}

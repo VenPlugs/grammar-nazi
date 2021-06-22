@@ -1,5 +1,7 @@
-import { React } from '@vizality/webpack'
-import { Tooltip, Button } from '@vizality/components'
+const { React, getModuleByDisplayName } = require('powercord/webpack')
+const { Button } = require('powercord/components')
+
+const Tooltip = getModuleByDisplayName("Tooltip", false);
 
 module.exports = class TextContainerButton extends React.PureComponent {
 	constructor(props){
@@ -12,6 +14,7 @@ module.exports = class TextContainerButton extends React.PureComponent {
 	render() {
 			return <>
         <Tooltip text={`${this.enabled ? 'Disable' : 'Enable'} Grammar Nazi`} position='top'>
+        {({ onMouseLeave, onMouseEnter }) => (
           <Button
             className={`toggle-button ${this.enabled ? 'active' : 'inactive'}`}
             look={Button.Looks.BLANK}
@@ -21,6 +24,8 @@ module.exports = class TextContainerButton extends React.PureComponent {
               this.set('nazify', this.enabled)
               this.forceUpdate()
             }}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}  
           >
             <div className='contents-18-Yxp button-3AYNKb button-318s1X'>
               <svg className='buttonWrapper-1ZmCpA' width='24px' height='24px'>
@@ -32,6 +37,7 @@ module.exports = class TextContainerButton extends React.PureComponent {
               </svg>
             </div>
           </Button>
+        )}
 			  </Tooltip>
       </>
 	}

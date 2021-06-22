@@ -1,31 +1,37 @@
-import React from 'react'
-
-import { Plugin } from '@vizality/entities'
-import { patch, unpatch } from '@vizality/patcher'
-import { getModule, messages, getModuleByDisplayName } from '@vizality/webpack'
-import { findInReactTree } from '@vizality/util/react'
+const { Plugin }  = require('powercord/entities')
+const { inject, uninject } = require('powercord/injector')
+const { getModule: getMod, messages, getModuleByDisplayName, React } = require('powercord/webpack')
+const getModule = (key, sync) => getMod(typeof key === "string" ? [key] : key, sync);
+const { findInReactTree } = require('powercord/util')
 const { receiveMessage } = messages
 
 const HeaderBarButton = require('./components/HeaderBarButton')
 const TextContainerButton = require('./components/TextContainerButton')
 
-export default class GrammarNazi extends Plugin {
-    async start() {
-    vizality.api.commands.registerCommand({
+module.exports = class GrammarNazi extends Plugin {
+  async startPlugin() {
+      powercord.api.settings.registerSettings("GrammarNazi", {
+        category: this.entityID,
+        label: "GrammarNazi",
+        render: require('./components/Settings')
+      });
+  
+  
+    powercord.api.commands.registerCommand({
       command: 'addword',
       aliases: ['aw', 'aword'],
 			description: 'Add a key/value pair to the custom dictionary.',
 			usage: '{c} "key" "value"',
 			executor: (args) => this.addDict(args)
     })
-    vizality.api.commands.registerCommand({
+    powercord.api.commands.registerCommand({
       command: 'removeword',
       aliases: ['rm', 'rmword'],
 			description: 'Remove a key/value pair from the custom dictionary.',
 			usage: '{c} "key"',
 			executor: (args) => this.removeDict(args)
 		})
-		vizality.api.commands.registerCommand({
+		powercord.api.commands.registerCommand({
       command: 'listwords',
       aliases: ['lw', 'dictionary', 'dict'],
 			description: 'View the current custom dictionary.',
@@ -34,7 +40,7 @@ export default class GrammarNazi extends Plugin {
     })
 
     /* Stylesheet */
-    this.injectStyles("style.scss")
+    this.loadStylesheet("style.css")
 
     /* Define Settings */
     if (this.settings.get('customDictionary') === undefined) this.settings.set('customDictionary', {})
@@ -44,8 +50,7 @@ export default class GrammarNazi extends Plugin {
     }
 
     /* Inject on Message Send */
-    const MessageEvents = await getModule('sendMessage')
-		patch('message-send', MessageEvents, 'sendMessage', (args) => {
+		inject('message-send', messages, 'sendMessage', (args) => {
       let text = args[1].content.trim()
       let split = text.split(' ')
       let customDictionary = this.settings.get('customDictionary')
@@ -61,30 +66,31 @@ export default class GrammarNazi extends Plugin {
 
     /* Inject Toggle Button */
     const ChannelTextAreaContainer = getModule((m) => m.type && m.type.render && m.type.render.displayName === 'ChannelTextAreaContainer', false)
-    patch('chat-button', ChannelTextAreaContainer.type, 'render', (args, res) => {
+    inject('chat-button', ChannelTextAreaContainer.type, 'render', (args, res) => {
       if (this.settings.get('location') === 'channel-text-area-container') {
         const props = findInReactTree(res, (r) => r && r.className && r.className.indexOf('buttons-') == 0)
-        props.children.unshift(<TextContainerButton settings={this.settings}/>)
+        props.children.unshift(React.createElement(TextContainerButton, { settings: this.settings }))
       }
         return res
     })
     ChannelTextAreaContainer.type.render.displayName = 'ChannelTextAreaContainer'
     
     const HeaderBarContainer = await getModuleByDisplayName('HeaderBarContainer')
-    patch('header-bar', HeaderBarContainer.prototype, 'render', (args, res)=> {
+    inject('header-bar', HeaderBarContainer.prototype, 'render', (args, res)=> {
       if (this.settings.get('location') === 'header-bar-container')
-        res.props.toolbar.props.children.unshift(<HeaderBarButton settings={this.settings} bartype={HeaderBarContainer.Icon}/>)
+        res.props.toolbar.props.children.unshift(React.createElement(HeaderBarButton, { settings: this.settings, bartype: HeaderBarContainer.Icon }))
       return res
     })
 }
 
-    stop() {
-      vizality.api.commands.unregisterCommand('addword')
-      vizality.api.commands.unregisterCommand('removeword')
-      vizality.api.commands.unregisterCommand('listwords')
-      unpatch('message-send')
-      unpatch('chat-button')
-      unpatch('header-bar')
+    pluginWillUnload() {
+      powercord.api.commands.unregisterCommand('addword')
+      powercord.api.commands.unregisterCommand('removeword')
+      powercord.api.commands.unregisterCommand('listwords')
+      powercord.api.settings.unregisterSettings("GrammarNazi")
+      uninject('message-send')
+      uninject('chat-button')
+      uninject('header-bar')
       document.querySelectorAll('.toggle-button').forEach(e => e.style.display = 'none')
     }
 

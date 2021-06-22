@@ -1,7 +1,8 @@
 {
-    "name": "Grammar Nazi",
-    "version": "1.0.0",
-    "description": "Automatic punctuation, capitalization, and word comparison with a custom dictionary.",
-    "author": "Swishilicous#3200",
-    "license": "MIT."
+  "name": "Grammar Nazi",
+  "version": "1.0.0",
+  "description": "Automatic punctuation, capitalization, and word comparison with a custom dictionary.",
+  "author": "Swishilicous#3200",
+  "license": "MIT."
 }
+
