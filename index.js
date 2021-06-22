@@ -96,8 +96,6 @@ module.exports = class GrammarNazi extends Plugin {
       true
     );
 
-    console.log(this);
-    /* Inject Toggle Button */
     const ChannelTextAreaContainer = await getModule(m => m.type && m.type.render && m.type.render.displayName === "ChannelTextAreaContainer");
     inject("chat-button", ChannelTextAreaContainer.type, "render", (_, res) => {
       if (this.settings.get("location") !== "channel-text-area-container") return res;
@@ -143,7 +141,6 @@ module.exports = class GrammarNazi extends Plugin {
     receivedMessage.author.username = "Grammar Nazi";
     receivedMessage.author.avatar = "GrammarNaziAvatar";
 
-    /* String Formatting */
     let parsed;
     if (args.length === 2) {
       parsed = args;
@@ -169,7 +166,6 @@ module.exports = class GrammarNazi extends Plugin {
     if (customDictionary.hasOwnProperty(key)) {
       receivedMessage.content = `Entry "${key}" already exists!`;
     } else {
-      /* Save to Dictionary */
       customDictionary[key] = value;
       this.settings.set("customDictionary", customDictionary);
 
@@ -206,8 +202,7 @@ module.exports = class GrammarNazi extends Plugin {
     receivedMessage.author.username = "Grammar Nazi";
     receivedMessage.author.avatar = "GrammarNaziAvatar";
 
-    /* Write Message */
-    let customDictionary = this.settings.get("customDictionary");
+    const customDictionary = this.settings.get("customDictionary");
     const entries = Object.entries(customDictionary);
     if (!entries.length) receivedMessage.content = "Your dictionary is empty!";
     else {
