@@ -35,7 +35,7 @@ module.exports = class GrammarNazi extends Plugin {
       aliases: ["aw", "aword"],
       description: "Add a key/value pair to the custom dictionary.",
       usage: '{c} "key" "value"',
-      executor: this.addDict.bind(this)
+      executor: this.addWord.bind(this)
     });
 
     powercord.api.commands.registerCommand({
@@ -43,7 +43,15 @@ module.exports = class GrammarNazi extends Plugin {
       aliases: ["rm", "rmword"],
       description: "Remove a key/value pair from the custom dictionary.",
       usage: '{c} "key"',
-      executor: this.removeDict.bind(this)
+      executor: this.removeWord.bind(this),
+      autocomplete: args => {
+        return {
+          header: "Please specify which keyword you would like to remove",
+          commands: Object.keys(this.settings.get("customDictionary"))
+            .filter(k => k.includes(args.join(" ").toLowerCase()))
+            .map(k => ({ command: k }))
+        };
+      }
     });
 
     powercord.api.commands.registerCommand({
@@ -51,7 +59,7 @@ module.exports = class GrammarNazi extends Plugin {
       aliases: ["lw", "dictionary", "dict"],
       description: "View the current custom dictionary.",
       usage: "{c}",
-      executor: this.viewDict.bind(this)
+      executor: this.listWords.bind(this)
     });
 
     this.loadStylesheet("style.css");
@@ -128,7 +136,7 @@ module.exports = class GrammarNazi extends Plugin {
     document.querySelectorAll(".toggle-button").forEach(e => (e.style.display = "none"));
   }
 
-  async addDict(args) {
+  async addWord(args) {
     const receivedMessage = this.createBotMessage(this.getChannelId(), {});
 
     this.BOT_AVATARS.GrammarNaziAvatar = "https://i.imgur.com/wUcHvh0.png";
@@ -171,7 +179,7 @@ module.exports = class GrammarNazi extends Plugin {
     return receiveMessage(receivedMessage.channel_id, receivedMessage);
   }
 
-  async removeDict(args) {
+  async removeWord(args) {
     const receivedMessage = this.createBotMessage(this.getChannelId(), {});
 
     this.BOT_AVATARS.GrammarNaziAvatar = "https://i.imgur.com/wUcHvh0.png";
@@ -191,7 +199,7 @@ module.exports = class GrammarNazi extends Plugin {
     return receiveMessage(receivedMessage.channel_id, receivedMessage);
   }
 
-  async viewDict() {
+  async listWords() {
     const receivedMessage = this.createBotMessage(this.getChannelId(), {});
 
     this.BOT_AVATARS.GrammarNaziAvatar = "https://i.imgur.com/wUcHvh0.png";
